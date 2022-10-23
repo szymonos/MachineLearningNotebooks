@@ -1,16 +1,9 @@
-import argparse
-import os
-import sys
-
 import ray
 from ray.rllib import train
 from ray import tune
+import os
 
 from utils import callbacks
-
-
-DEFAULT_RAY_ADDRESS = 'localhost:6379'
-
 
 if __name__ == "__main__":
 
@@ -24,11 +17,9 @@ if __name__ == "__main__":
     if 'monitor' in args.config and args.config['monitor']:
         print("Video capturing is ON!")
 
-    # Start (connect to) Ray cluster
-    if args.ray_address is None:
-        args.ray_address = DEFAULT_RAY_ADDRESS
-
-    ray.init(address=args.ray_address)
+    # Start ray head (single node)
+    os.system('ray start --head')
+    ray.init(address='auto')
 
     # Run training task using tune.run
     tune.run(

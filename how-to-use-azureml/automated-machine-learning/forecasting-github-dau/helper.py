@@ -79,9 +79,7 @@ def get_result_df(remote_run):
             if "goal" in run.properties:
                 goal_minimize = run.properties["goal"].split("_")[-1] == "min"
 
-    summary_df = summary_df.T.sort_values(
-        "Score", ascending=goal_minimize
-    ).drop_duplicates(["run_algorithm"])
+    summary_df = summary_df.T.sort_values("Score", ascending=goal_minimize)
     summary_df = summary_df.set_index("run_algorithm")
     return summary_df
 
@@ -105,13 +103,8 @@ def run_inference(
     train_run.download_file(
         "outputs/{}".format(model_base_name), "inference/{}".format(model_base_name)
     )
-    train_run.download_file("outputs/conda_env_v_1_0_0.yml", "inference/condafile.yml")
 
-    inference_env = Environment("myenv")
-    inference_env.docker.enabled = True
-    inference_env.python.conda_dependencies = CondaDependencies(
-        conda_dependencies_file_path="inference/condafile.yml"
-    )
+    inference_env = train_run.get_environment()
 
     est = Estimator(
         source_directory=script_folder,

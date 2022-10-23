@@ -1,8 +1,7 @@
-import argparse
-import re
 import os
 
-import ray
+from ray_on_aml.core import Ray_On_AML
+
 from ray.tune import run_experiments
 from ray.tune.registry import register_trainable, register_env, get_trainable_cls
 import ray.rllib.contrib.maddpg.maddpg as maddpg
@@ -12,7 +11,8 @@ from util import parse_args
 
 
 def setup_ray():
-    ray.init(address='auto')
+    ray_on_aml = Ray_On_AML()
+    ray_on_aml.getRay()
 
     register_env('particle', env_creator)
 
@@ -120,5 +120,4 @@ if __name__ == '__main__':
         'horizon': args.max_episode_len,
         'video_frequency': args.checkpoint_freq,
     }
-
     train(args, env_config)

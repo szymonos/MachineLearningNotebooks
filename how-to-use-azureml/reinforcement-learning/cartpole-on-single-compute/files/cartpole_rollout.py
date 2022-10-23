@@ -1,4 +1,3 @@
-import argparse
 import os
 import sys
 
@@ -11,18 +10,13 @@ from azureml.core import Run
 from utils import callbacks
 
 
-DEFAULT_RAY_ADDRESS = 'localhost:6379'
-
-
-def run_rollout(args, parser, ray_address):
+def run_rollout(args, parser):
 
     config = args.config
     if not args.env:
         if not config.get("env"):
             parser.error("the following arguments are required: --env")
         args.env = config.get("env")
-
-    ray.init(address=ray_address)
 
     # Create the Trainer from config.
     cls = get_trainable_cls(args.run)
@@ -76,6 +70,10 @@ def run_rollout(args, parser, ray_address):
 
 if __name__ == "__main__":
 
+    # Start ray head (single node)
+    os.system('ray start --head')
+    ray.init(address='auto')
+
     # Add positional argument - serves as placeholder for checkpoint
     argvc = sys.argv[1:]
     argvc.insert(0, 'checkpoint-placeholder')
@@ -88,8 +86,12 @@ if __name__ == "__main__":
         help='Checkpoint number of the checkpoint from which to roll out')
 
     rollout_parser.add_argument(
-        '--ray-address', required=False, default=DEFAULT_RAY_ADDRESS,
-        help='The address of the Ray cluster to connect to')
+        '--artifacts-dataset', required=True,
+        help='The checkpoints artifacts dataset')
+
+    rollout_parser.add_argument(
+        '--artifacts-path', required=True,
+        help='The checkpoints artifacts path')
 
     args = rollout_parser.parse_args(argvc)
 
@@ -116,4 +118,4 @@ if __name__ == "__main__":
     args.checkpoint = checkpoint
 
     # Start rollout
-    run_rollout(args, rollout_parser, args.ray_address)
+    run_rollout(args, rollout_parser)

@@ -1,4 +1,7 @@
 
+# Important Note
+Azure Machine Learning reinforcement learning via the `azureml.contrib.train.rl` package that is used on this page will no longer be supported after June 2022. We recommend customers use Ray-on-AML library to facilitate execution of reinforcement learning experiments on Azure Machine Learning. The sample notebooks referenced in [this section](#contents) are updated accordingly to use Ray on AML library.
+
 # Azure Machine Learning - Reinforcement Learning (Public Preview)
 
 <!-- 
